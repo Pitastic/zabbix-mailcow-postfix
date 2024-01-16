@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-MAILLOG=/var/log/mail.log
-PFOFFSETFILE=/tmp/zabbix-postfix-offset.dat
 PFSTATSFILE=/tmp/postfix_statsfile.dat
 TEMPFILE=$(mktemp)
 PFLOGSUMM=/usr/sbin/pflogsumm
-PYGTAIL=/usr/sbin/pygtail.py
+DOCKER_LOGS="docker logs --since=720h 74f2a9031d0f" #TODO: Time delta from config
 
 # list of values we are interested in
 PFVALS=( 'received' 'delivered' 'forwarded' 'deferred' 'bounced' 'rejected' 'held' 'discarded' 'reject_warnings' 'bytes_received' 'bytes_delivered' )
@@ -18,29 +16,24 @@ write_result () {
 
 }
 
-# check for binaries we need to run the script
+# check for binaries/containers we need to run the script
 if [ ! -x ${PFLOGSUMM} ] ; then
         echo "ERROR: ${PFLOGSUMM} not found"
         exit 1
 fi
 
-if [ ! -x ${PYGTAIL} ] ; then
-        echo "ERROR: ${PYGTAIL} not found"
-        exit 1
-fi
-
-if [ ! -r ${MAILLOG} ] ; then
-        echo "ERROR: ${MAILLOG} not readable"
+if [ -z $(docker ps -qf name=postfix-mailcow) ] ; then
+        echo "ERROR: ID for container 'postfix-mailcow' not found"
         exit 1
 fi
 
 
 # check whether file exists and the write permissions are granted
 if [ ! -w "${PFSTATSFILE}" ]; then
-        touch "${PFSTATSFILE}" && chown zabbix:zabbix "${PFSTATSFILE}" > /dev/null 2>&1
+        touch "${PFSTATSFILE}" > /dev/null 2>&1
 
         if [ ! $? -eq 0 ]; then
-                result_text="ERROR: wrong exit code returned while creating file ${PFSTATSFILE} and setting its owner to zaabbix:zabbix"
+                result_text="ERROR: wrong exit code returned while creating file ${PFSTATSFILE}"
                 result_code="1"
                 write_result "${result_code}" "${result_text}"
         fi
@@ -88,10 +81,26 @@ if [ -n "$1" ]; then
         readvalue "$1"
 else
         # read the new part of mail log and read it with pflogsumm to get the summary
-        "${PYGTAIL}" -o"${PFOFFSETFILE}" "${MAILLOG}" | "${PFLOGSUMM}" -h 0 -u 0 --no_bounce_detail --no_deferral_detail --no_reject_detail --no_smtpd_warnings --no_no_msg_size > "${TEMPFILE}" 2>/dev/null
+        #
+        # -h 0          no tops per Domain
+        # -u 0          no tops per User
+        # --zero_fill   fill empty cols with zeros
+        # --problems_first      list problems on top
+        #
+        # No Details on:
+        #       --no_no_msg_size
+        #       --bounce-detail=0
+        #       --deferral-detail=0
+        #       --reject-detail=0
+        #       --smtpd-warning-detail=0
+        #
+        pflog_flags='-h 0 -u 0 \
+                        --no_no_msg_size --zero_fill --problems_first \
+                        --bounce-detail=1 --deferral-detail=0 --reject-detail=0 --smtpd-warning-detail=0'
+        ${DOCKER_LOGS} | "${PFLOGSUMM}" ${pflog_flags} > "${TEMPFILE}" 2>/dev/null
 
         if [ ! $? -eq 0 ]; then
-                result_text="ERROR: wrong exit code returned while running  \"${PYGTAIL}\" -o\"${PFOFFSETFILE}\" \"${MAILLOG}\" | \"${PFLOGSUMM}\" -h 0 -u 0 --no_bounce_detail --no_deferral_detail --no_reject_detail --no_smtpd_warnings --no_no_msg_size > \"${TEMPFILE}\" 2>/dev/null"
+                result_text="ERROR: wrong exit code returned while running  ${DOCKER_LOGS} | ${PFLOGSUMM} ${pflog_flags} > ${TEMPFILE} 2>/dev/null"
                 result_code="1"
                 write_result "${result_code}" "${result_text}"
         fi

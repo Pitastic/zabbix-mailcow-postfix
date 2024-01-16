@@ -1,23 +1,20 @@
 # zabbix-postfix-template
-Zabbix template for Postfix SMTP server
+Zabbix template for Postfix SMTP server in a [Mailcow-Dockerized](https://docs.mailcow.email/) environment.
 
-Works for Zabbix 4.x
+Because of the `docker logs --since=XXX` feature something like `logtail` is not required anymore. Be careful: The checkintervall setting in the templates must match (or should not be longer than) the interval setting in the agent config for this service. Otherwise loglines will be skipped.
 
-Forked from http://admin.shamot.cz/?p=424
+Works for Zabbix 6.x
 
 # Requirements
 * [pflogsum](http://jimsun.linxnet.com/postfix_contrib.html)
-* [pygtail](https://pypi.org/project/pygtail/)
 
 # Installation
+
     # for Ubuntu / Debian
     apt-get install pflogsumm
     
     # for CentOS
     yum install postfix-perl-scripts
-    
-    cp pygtail.py /usr/sbin/
-    chmod +x /usr/sbin/pygtail.py
     
     # ! check MAILLOG path in zabbix-postfix-stats.sh
     cp zabbix-postfix-stats.sh /usr/bin/
@@ -25,10 +22,6 @@ Forked from http://admin.shamot.cz/?p=424
 
     cp userparameter_postfix.conf /etc/zabbix/zabbix_agentd.d/
     
-    # run visudo as root
-    Defaults:zabbix !requiretty
-    zabbix ALL=(ALL) NOPASSWD: /usr/bin/zabbix-postfix-stats.sh
-    
     systemctl restart zabbix-agent
 
-Finally import template_app_zabbix.xml and attach it to your host
+Finally import template_app_zabbix.xml and attach it to your host.
