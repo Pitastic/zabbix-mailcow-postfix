@@ -32,8 +32,9 @@ fi
 readvalue () {
         local $key
         key=$1
-        if [ -n "${key}" ]; then
-                value=$(grep -e "^${key};" "${PFSTATSFILE}" | cut -d ";" -f2)
+        value=$(grep -e "^${key};" "${PFSTATSFILE}" | cut -d ";" -f2)
+
+        if [ ! -z $value ]; then
                 echo "${value}"
 
         else
