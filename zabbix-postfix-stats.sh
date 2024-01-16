@@ -31,7 +31,7 @@ fi
 # read specific value from data file and print it
 readvalue () {
         local $key
-        key=$(echo ${PFVALS[@]} | grep -wo $1)
+        key=$1
         if [ -n "${key}" ]; then
                 value=$(grep -e "^${key};" "${PFSTATSFILE}" | cut -d ";" -f2)
                 echo "${value}"
