@@ -33,13 +33,24 @@ I decided to repond with one `JSON` containing all values for (so called) depend
 
 ## Installation
 
-    apt install pflogsumm               # for Ubuntu / Debian
-    yum install postfix-perl-scripts    # for CentOS
+    # For Ubuntu / Debian and/or Agent v2
     
+    apt install pflogsumm
+    
+    cp mailcow_postfix.conf /etc/zabbix/zabbix_agent2.d/
     cp zabbix-postfix-stats.sh /usr/bin/
     chmod +x /usr/bin/zabbix-postfix-stats.sh
+    
+    systemctl restart zabbix-agent2
+
+    
+    # For CentOS and/or Agent v1
+    
+    yum install postfix-perl-scripts
 
     cp mailcow_postfix.conf /etc/zabbix/zabbix_agentd.d/
+    cp zabbix-postfix-stats.sh /usr/bin/
+    chmod +x /usr/bin/zabbix-postfix-stats.sh
     
     systemctl restart zabbix-agent
 
