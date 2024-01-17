@@ -9,12 +9,14 @@
     </groups>
     <templates>
         <template>
-            <template>Template App Postfix</template>
-            <name>Template App Postfix</name>
-            <description/>
+            <template>Mailcow Postfix</template>
+            <name>Mailcow Postfix</name>
+            <description>Zabbix Postfix Template for Mailcow (dockerized)
+
+See: https://github.com/Pitastic/zabbix-postfix-template</description>
             <groups>
                 <group>
-                    <name>Templates</name>
+                    <name>Templates/Applications</name>
                 </group>
             </groups>
             <applications>
@@ -29,7 +31,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>net.tcp.service[smtp]</key>
-                    <delay>1m</delay>
+                    <delay>5m</delay>
                     <history>1w</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -88,7 +90,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix.pfmailq</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -152,7 +154,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix.update_data</key>
-                    <delay>1m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>0</trends>
                     <status>0</status>
@@ -211,7 +213,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[bounced]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -275,7 +277,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[bytes_delivered]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -339,7 +341,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[bytes_received]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -403,7 +405,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[deferred]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -467,7 +469,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[delivered]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -531,7 +533,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[discarded]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -595,7 +597,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[forwarded]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -659,7 +661,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[held]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -723,7 +725,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[received]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -787,7 +789,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[rejected]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -851,7 +853,7 @@
                     <snmp_community/>
                     <snmp_oid/>
                     <key>postfix[reject_warnings]</key>
-                    <delay>3m</delay>
+                    <delay>5m</delay>
                     <history>30d</history>
                     <trends>365d</trends>
                     <status>0</status>
@@ -919,7 +921,7 @@
     </templates>
     <triggers>
         <trigger>
-            <expression>{Template App Postfix:postfix[bounced].last(0)}&gt;50</expression>
+            <expression>{Mailcow Postfix:postfix[bounced].last(0)}&gt;50</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
             <name>Postfix: Too many bounced mails on {HOST.NAME}</name>
@@ -935,7 +937,7 @@
             <tags/>
         </trigger>
         <trigger>
-            <expression>{Template App Postfix:postfix[deferred].last(0)}&gt;50</expression>
+            <expression>{Mailcow Postfix:postfix[deferred].last(0)}&gt;50</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
             <name>Postfix: Too many deferred mails on {HOST.NAME}</name>
@@ -951,7 +953,7 @@
             <tags/>
         </trigger>
         <trigger>
-            <expression>{Template App Postfix:postfix[held].last(0)}&gt;200 or {Template App Postfix:postfix.pfmailq.last(0)}&gt;200</expression>
+            <expression>{Mailcow Postfix:postfix[held].last(0)}&gt;200 or {Mailcow Postfix:postfix.pfmailq.last(0)}&gt;200</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
             <name>Postfix: Too many held mails on {HOST.NAME}</name>
@@ -967,7 +969,7 @@
             <tags/>
         </trigger>
         <trigger>
-            <expression>{Template App Postfix:postfix[rejected].last(0)}&gt;20 or {Template App Postfix:postfix[reject_warnings].last(0)}&gt;20</expression>
+            <expression>{Mailcow Postfix:postfix[rejected].last(0)}&gt;20 or {Mailcow Postfix:postfix[reject_warnings].last(0)}&gt;20</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
             <name>Postfix: Too many rejected mails on {HOST.NAME}</name>
@@ -983,7 +985,7 @@
             <tags/>
         </trigger>
         <trigger>
-            <expression>{Template App Postfix:postfix.update_data.regexp(ERROR)}=1</expression>
+            <expression>{Mailcow Postfix:postfix.update_data.regexp(ERROR)}=1</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
             <name>Postfix statistics could not be updated</name>
@@ -999,7 +1001,7 @@
             <tags/>
         </trigger>
         <trigger>
-            <expression>{Template App Postfix:net.tcp.service[smtp].max(#3)}=0</expression>
+            <expression>{Mailcow Postfix:net.tcp.service[smtp].max(#3)}=0</expression>
             <recovery_mode>0</recovery_mode>
             <recovery_expression/>
             <name>SMTP service is down on {HOST.NAME}</name>
@@ -1042,7 +1044,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[bounced]</key>
                     </item>
                 </graph_item>
@@ -1054,7 +1056,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[deferred]</key>
                     </item>
                 </graph_item>
@@ -1066,7 +1068,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[discarded]</key>
                     </item>
                 </graph_item>
@@ -1078,7 +1080,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[rejected]</key>
                     </item>
                 </graph_item>
@@ -1090,7 +1092,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[reject_warnings]</key>
                     </item>
                 </graph_item>
@@ -1122,7 +1124,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[bounced]</key>
                     </item>
                 </graph_item>
@@ -1134,7 +1136,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[reject_warnings]</key>
                     </item>
                 </graph_item>
@@ -1146,7 +1148,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix.pfmailq</key>
                     </item>
                 </graph_item>
@@ -1158,7 +1160,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[discarded]</key>
                     </item>
                 </graph_item>
@@ -1170,7 +1172,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[rejected]</key>
                     </item>
                 </graph_item>
@@ -1182,7 +1184,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[received]</key>
                     </item>
                 </graph_item>
@@ -1194,7 +1196,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[held]</key>
                     </item>
                 </graph_item>
@@ -1206,7 +1208,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[forwarded]</key>
                     </item>
                 </graph_item>
@@ -1218,7 +1220,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[delivered]</key>
                     </item>
                 </graph_item>
@@ -1230,7 +1232,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[deferred]</key>
                     </item>
                 </graph_item>
@@ -1262,7 +1264,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[bytes_received]</key>
                     </item>
                 </graph_item>
@@ -1274,7 +1276,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template App Postfix</host>
+                        <host>Mailcow Postfix</host>
                         <key>postfix[bytes_delivered]</key>
                     </item>
                 </graph_item>

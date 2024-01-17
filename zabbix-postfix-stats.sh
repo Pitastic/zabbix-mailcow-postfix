@@ -3,7 +3,7 @@
 PFSTATSFILE=/tmp/postfix_statsfile.dat
 TEMPFILE=$(mktemp)
 PFLOGSUMM=/usr/sbin/pflogsumm
-DOCKER_LOGS="docker logs --since=720h $(docker ps -qf name=postfix-mailcow)" #TODO: Time delta from config
+DOCKER_LOGS="docker logs --since=5m $(docker ps -qf name=postfix-mailcow)" #TODO: Time delta from config
 
 # list of values we are interested in
 PFVALS=( 'received' 'delivered' 'forwarded' 'deferred' 'bounced' 'rejected' 'held' 'discarded' 'reject_warnings' 'bytes_received' 'bytes_delivered' 'senders' 'recipients' )
