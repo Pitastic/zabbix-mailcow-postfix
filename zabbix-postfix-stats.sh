@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-PFSTATSFILE=/tmp/postfix_statsfile.dat
 TEMPFILE=$(mktemp)
 PFLOGSUMM=/usr/sbin/pflogsumm
-DOCKER_LOGS="docker logs --since=6m $(docker ps -qf name=postfix-mailcow)"
+TS_FILE=/tmp/zabbix-postfix.timestamp
+
+# getting and setting new timestamp
+if [ -f $TS_FILE ] ; then
+        TIMESTAMP="$(cat $TS_FILE)"
+else
+        TIMESTAMP="6m"
+fi
+echo $(date +%Y-%m-%dT%T) > $TS_FILE
+
+# fetch logs command with timestamp
+DOCKER_LOGS="docker logs --since=${TIMESTAMP} $(docker ps -qf name=postfix-mailcow)"
+
 
 # list of values we are interested in
 PFVALS=( 'received' 'delivered' 'forwarded' 'deferred' 'bounced' 'rejected' 'held' 'discarded' 'reject_warnings' 'bytes_received' 'bytes_delivered' 'senders' 'recipients' )
 
-
-# check whether file exists and the write permissions are granted
-rm -f "${PFSTATSFILE}" > /dev/null 2>&1
-if [ -f "${PFSTATSFILE}" ]; then
-
-        result_text="{\"error\": \"could not cleanup statfile ${PFSTATSFILE}\"}"
-        result_code="1"
-        write_result "${result_code}" "${result_text}"
-
-fi
-touch "${PFSTATSFILE}" > /dev/null 2>&1
 
 # check for binaries/containers we need to run the script
 if [ ! -x ${PFLOGSUMM} ] ; then
