@@ -2,11 +2,11 @@
 
 Zabbix template for Postfix SMTP server in a [Mailcow-Dockerized](https://docs.mailcow.email/) environment.
 
-Because of the `docker logs --since=XXX` feature something like `logtail` is not required anymore. On every request loglines since the last requests timestamp will be parsed.
+I added some more data poimts espacially the bounce information. On the other hand I deleted the ˋlogtailˋ feature as if this is not required anymore because of dockers `docker logs --since=XXX` feature.
 
-I added some more datapoints and decided to respond with one `JSON` containing all values for (so called) dependent items in Zabbix. This way the results are more actual and less http requests are needed. Also the Postfix log stats are rewritten on every request insted of updating values on the client.
+I decided to respond with one `JSON` containing all values for (so called) dependent items in Zabbix. This way the results are more actual and less http requests are needed. Also the Postfix log stats are rewritten on every request insted of updating values on the client.
 
-Bounced and rejected Emails are not recoverable as this is an important problem in my environment. You may adjust this triggers to your needs.
+New Triggers are also created for the new bounced emails data points. Bounced and rejected Emails are not recoverable and must be closed manually. Three bounces are for Information, 10 is Average a warning but just one in cause of being on a blocklist (bounce code 550) is a Disaster. You may adjust the numbers and severity in triggers as always to your needs.
 
 ### Includes the following metrics:
 

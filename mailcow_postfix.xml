@@ -38,7 +38,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                     <triggers>
@@ -62,13 +62,13 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                     <triggers>
                         <trigger>
                             <uuid>7a3b43b19df3489991d1f07a91f115e4</uuid>
-                            <expression>find(/Mailcow Postfix/postfix.fetch_log_data,,&quot;regexp&quot;,&quot;ERROR&quot;)=1</expression>
+                            <expression>find(/Mailcow Postfix/postfix.fetch_log_data,,&quot;regexp&quot;,&quot;error&quot;)=1</expression>
                             <name>Postfix statistics could not be updated</name>
                             <priority>WARNING</priority>
                         </trigger>
@@ -92,7 +92,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -119,17 +119,79 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                     <triggers>
                         <trigger>
                             <uuid>98a2f6c13574433fa40d5297453dea35</uuid>
-                            <expression>last(/Mailcow Postfix/postfix[bounced])&gt;50</expression>
+                            <expression>last(/Mailcow Postfix/postfix[bounced])&gt;2</expression>
+                            <recovery_mode>NONE</recovery_mode>
+                            <name>Postfix: Bounced mails on {HOST.NAME}</name>
+                            <url_name>Show Domains that bounced</url_name>
+                            <url>/history.php?action=showvalues&amp;itemids[]=50986</url>
+                            <priority>INFO</priority>
+                            <description>Some bounced mails for whatever reason.</description>
+                            <manual_close>YES</manual_close>
+                            <dependencies>
+                                <dependency>
+                                    <name>Postfix: Too many bounced mails on {HOST.NAME}</name>
+                                    <expression>last(/Mailcow Postfix/postfix[bounced])&gt;9</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>Postfix: {HOST.NAME} seems to be on a blocklist</name>
+                                    <expression>last(/Mailcow Postfix/postfix[bounced])&gt;0 and find(/Mailcow Postfix/postfix[bounced_domains],,,&quot;550:&quot;)&lt;&gt;0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                        <trigger>
+                            <uuid>4dda104c6bab4908929574890c3855aa</uuid>
+                            <expression>last(/Mailcow Postfix/postfix[bounced])&gt;9</expression>
+                            <recovery_mode>NONE</recovery_mode>
                             <name>Postfix: Too many bounced mails on {HOST.NAME}</name>
-                            <priority>WARNING</priority>
+                            <url_name>Show Domains that bounced</url_name>
+                            <url>/history.php?action=showvalues&amp;itemids[]=50986</url>
+                            <priority>AVERAGE</priority>
+                            <description>At least 10 bounced mails for whatever reason.</description>
+                            <manual_close>YES</manual_close>
+                            <dependencies>
+                                <dependency>
+                                    <name>Postfix: {HOST.NAME} seems to be on a blocklist</name>
+                                    <expression>last(/Mailcow Postfix/postfix[bounced])&gt;0 and find(/Mailcow Postfix/postfix[bounced_domains],,,&quot;550:&quot;)&lt;&gt;0</expression>
+                                </dependency>
+                            </dependencies>
                         </trigger>
                     </triggers>
+                </item>
+                <item>
+                    <uuid>5111678d52144c808185241022fce379</uuid>
+                    <name>Parsed: Bounced domains</name>
+                    <type>DEPENDENT</type>
+                    <key>postfix[bounced_domains]</key>
+                    <delay>0</delay>
+                    <history>30d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>List of domains that rejected mails from your server.</description>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.bounced_domains[*]</parameter>
+                            </parameters>
+                            <error_handler>CUSTOM_VALUE</error_handler>
+                            <error_handler_params>none</error_handler_params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>postfix.fetch_log_data</key>
+                    </master_item>
+                    <tags>
+                        <tag>
+                            <tag>application</tag>
+                            <value>postfix</value>
+                        </tag>
+                    </tags>
                 </item>
                 <item>
                     <uuid>58a338dcd46c4376bcde1f846bb4735e</uuid>
@@ -154,7 +216,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -181,7 +243,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -208,15 +270,17 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                     <triggers>
                         <trigger>
                             <uuid>9d7df6309aeb4c7db397c72652519f56</uuid>
                             <expression>last(/Mailcow Postfix/postfix[deferred])&gt;50</expression>
+                            <recovery_mode>NONE</recovery_mode>
                             <name>Postfix: Too many deferred mails on {HOST.NAME}</name>
                             <priority>HIGH</priority>
+                            <manual_close>YES</manual_close>
                         </trigger>
                     </triggers>
                 </item>
@@ -243,7 +307,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -270,7 +334,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -297,7 +361,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -324,7 +388,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -351,7 +415,34 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>65e23bc24a404e01bb4b94734b455784</uuid>
+                    <name>Parse: Recipients</name>
+                    <type>DEPENDENT</type>
+                    <key>postfix[recipients]</key>
+                    <delay>0</delay>
+                    <history>30d</history>
+                    <units>addresses</units>
+                    <description>Number of different receivers (in- or outgoing).</description>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.recipients</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>postfix.fetch_log_data</key>
+                    </master_item>
+                    <tags>
+                        <tag>
+                            <tag>application</tag>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -378,7 +469,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -405,7 +496,34 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                     <tags>
                         <tag>
                             <tag>application</tag>
-                            <value>Postfix</value>
+                            <value>postfix</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>037c2f02980746b9af7ab661c1be46f2</uuid>
+                    <name>Parse: Senders</name>
+                    <type>DEPENDENT</type>
+                    <key>postfix[senders]</key>
+                    <delay>0</delay>
+                    <history>30d</history>
+                    <units>addresses</units>
+                    <description>Number of different senders (in- or outgoing).</description>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.senders</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>postfix.fetch_log_data</key>
+                    </master_item>
+                    <tags>
+                        <tag>
+                            <tag>application</tag>
+                            <value>postfix</value>
                         </tag>
                     </tags>
                 </item>
@@ -422,8 +540,21 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
         <trigger>
             <uuid>55c08fd0316e4dd9a42bebeb7f324e0f</uuid>
             <expression>last(/Mailcow Postfix/postfix[rejected])&gt;20 or last(/Mailcow Postfix/postfix[reject_warnings])&gt;20</expression>
+            <recovery_mode>NONE</recovery_mode>
             <name>Postfix: Too many rejected mails on {HOST.NAME}</name>
             <priority>HIGH</priority>
+            <manual_close>YES</manual_close>
+        </trigger>
+        <trigger>
+            <uuid>03ca5504129d49178d244e554542dce4</uuid>
+            <expression>last(/Mailcow Postfix/postfix[bounced])&gt;0 and find(/Mailcow Postfix/postfix[bounced_domains],,,&quot;550:&quot;)&lt;&gt;0</expression>
+            <recovery_mode>NONE</recovery_mode>
+            <name>Postfix: {HOST.NAME} seems to be on a blocklist</name>
+            <url_name>Show Domains that bounced</url_name>
+            <url>/history.php?action=showvalues&amp;itemids[]=50986</url>
+            <priority>DISASTER</priority>
+            <description>A bounced mail in cause of being on a blocklist.</description>
+            <manual_close>YES</manual_close>
         </trigger>
     </triggers>
     <graphs>
@@ -486,6 +617,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
             <graph_items>
                 <graph_item>
                     <color>009900</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[bounced]</key>
@@ -494,6 +626,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>1</sortorder>
                     <color>FF99FF</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[reject_warnings]</key>
@@ -502,6 +635,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>2</sortorder>
                     <color>AAAA00</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix.pfmailq</key>
@@ -510,6 +644,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>3</sortorder>
                     <color>EE00EE</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[discarded]</key>
@@ -518,6 +653,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>4</sortorder>
                     <color>880088</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[rejected]</key>
@@ -526,6 +662,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>5</sortorder>
                     <color>0000CC</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[received]</key>
@@ -534,6 +671,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>6</sortorder>
                     <color>FF6666</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[held]</key>
@@ -542,6 +680,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>7</sortorder>
                     <color>FFFF33</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[forwarded]</key>
@@ -550,6 +689,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>8</sortorder>
                     <color>00EE00</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[delivered]</key>
@@ -558,6 +698,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>9</sortorder>
                     <color>EE0000</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[deferred]</key>
@@ -573,6 +714,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
             <graph_items>
                 <graph_item>
                     <color>C80000</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[bytes_received]</key>
@@ -581,6 +723,7 @@ See: https://github.com/Pitastic/zabbix-postfix-template</description>
                 <graph_item>
                     <sortorder>1</sortorder>
                     <color>00C800</color>
+                    <calc_fnc>ALL</calc_fnc>
                     <item>
                         <host>Mailcow Postfix</host>
                         <key>postfix[bytes_delivered]</key>
