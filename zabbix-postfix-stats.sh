@@ -4,18 +4,6 @@ TEMPFILE=$(mktemp)
 PFLOGSUMM=/usr/sbin/pflogsumm
 TS_FILE=/tmp/zabbix-postfix.timestamp
 
-# getting and setting new timestamp
-if [ -f $TS_FILE ] ; then
-        TIMESTAMP="$(cat $TS_FILE)"
-else
-        TIMESTAMP="6m"
-fi
-echo $(date +%Y-%m-%dT%T) > $TS_FILE
-
-# fetch logs command with timestamp
-DOCKER_LOGS="docker logs --since=${TIMESTAMP} $(docker ps -qf name=postfix-mailcow)"
-
-
 # list of values we are interested in
 PFVALS=( 'received' 'delivered' 'forwarded' 'deferred' 'bounced' 'rejected' 'held' 'discarded' 'reject_warnings' 'bytes_received' 'bytes_delivered' 'senders' 'recipients' )
 
@@ -30,6 +18,22 @@ if [ -z $(docker ps -qf name=postfix-mailcow) ] ; then
         echo "{\"error\": \"ID for container 'postfix-mailcow' not found\"}"
         exit 1
 fi
+
+# getting and setting new timestamp
+if [ ! -w $TS_FILE ] ; then
+        echo "{\"error\": \"Permission on file ${TS_FILE} denied\"}"
+        exit 1
+fi
+if [ -f $TS_FILE ] ; then
+        TIMESTAMP="$(cat $TS_FILE)"
+else
+        TIMESTAMP="6m"
+fi
+echo $(date +%Y-%m-%dT%T) > $TS_FILE
+
+# fetch logs command with timestamp
+DOCKER_LOGS="docker logs --since=${TIMESTAMP} $(docker ps -qf name=postfix-mailcow)"
+
 
 # write result of running this script
 write_result () {
@@ -109,7 +113,8 @@ done
 result_text="${result_text}$(writebounces)"
 result_text="${result_text}}"
 
+# clean up and return
+rm "${TEMPFILE}"
+
 result_code="0"
 write_result "${result_code}" "${result_text}"
-
-rm "${TEMPFILE}"

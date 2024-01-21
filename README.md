@@ -2,9 +2,11 @@
 
 Zabbix template for Postfix SMTP server in a [Mailcow-Dockerized](https://docs.mailcow.email/) environment.
 
-Because of the `docker logs --since=XXX` feature something like `logtail` is not required anymore.
+Because of the `docker logs --since=XXX` feature something like `logtail` is not required anymore. On every request loglines since the last requests timestamp will be parsed.
 
-I decided to repond with one `JSON` containing all values for (so called) dependent items in Zabbix. This way the results are more actual and less http requests are needed. Also the Postfix log stats are rewritten on every request insted of updating values on the client. Be careful: The checkintervall / delay setting in the template must be smaller than the amount of logs that are fetched from the containers. Otherwise you will skip loglines.
+I added some more datapoints and decided to respond with one `JSON` containing all values for (so called) dependent items in Zabbix. This way the results are more actual and less http requests are needed. Also the Postfix log stats are rewritten on every request insted of updating values on the client.
+
+Bounced and rejected Emails are not recoverable as this is an important problem in my environment. You may adjust this triggers to your needs.
 
 ### Includes the following metrics:
 
@@ -20,10 +22,10 @@ I decided to repond with one `JSON` containing all values for (so called) depend
 | forwarded     |  mails  |  Mails outgoing (forwarded successfully)  |
 | held          |  mails  |  Mails in transit e.g. waiting for scanning  |
 | received      |  mails  |  Mails incomming  |
-| recipients    |  addresses  |  Number of diffrent receivers (in- or outgoing)  |
+| recipients    |  addresses  |  Number of different receivers (in- or outgoing)  |
 | reject_warnings  |  mails  |  Your server logs a warning but received this emails  |
 | rejected      |  mails  |  Mails your server refused to send (sender got bounced) |
-| senders       |  addresses  |  Number of diffrent senders (in- or outgoing)  |
+| senders       |  addresses  |  Number of different senders (in- or outgoing)  |
 
 
 ## Requirements
@@ -33,7 +35,9 @@ I decided to repond with one `JSON` containing all values for (so called) depend
 
 ## Installation
 
-    # For Ubuntu / Debian and/or Agent v2
+Import `mailcow_postfix.xml` and attach it to your host after the installation below. No config adjustment is needed.
+
+### ...for Ubuntu / Debian and/or Agent v2
     
     apt install pflogsumm
     
@@ -44,7 +48,7 @@ I decided to repond with one `JSON` containing all values for (so called) depend
     systemctl restart zabbix-agent2
 
     
-    # For CentOS and/or Agent v1
+### ...for CentOS and/or Agent v1
     
     yum install postfix-perl-scripts
 
@@ -53,5 +57,3 @@ I decided to repond with one `JSON` containing all values for (so called) depend
     chmod +x /usr/bin/zabbix-postfix-stats.sh
     
     systemctl restart zabbix-agent
-
-Finally import `mailcow_postfix.xml` and attach it to your host.
